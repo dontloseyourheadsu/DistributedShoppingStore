@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.subasta";
+option java_outer_classname = "SubastaProto";
+
+package subasta;
+
+// El servicio principal
+service SubastaServicio {
+  
+  // Registrar un usuario
+  rpc RegistraUsuario(UsuarioRequest) returns (RespuestaBooleana);
+
+  // Poner un producto a la venta
+  rpc AgregaProductoALaVenta(ProductoRequest) returns (RespuestaBooleana);
+
+  // Hacer una oferta por un producto
+  rpc AgregaOferta(OfertaRequest) returns (RespuestaBooleana);
+
+  // Obtener la lista de todos los productos
+  rpc ObtieneCatalogo(Empty) returns (CatalogoRespuesta);
+
+  // --- Solución de Sincronización  ---
+  // Un stream del servidor al cliente.
+  // El cliente se suscribe y el servidor le envía notificaciones.
+  rpc SuscribirseNotificaciones(Empty) returns (stream NotificacionUpdate);
+}
+
+// Mensajes
+message Empty {}
+
+message UsuarioRequest {
+  string nombre = 1;
+}
+
+message ProductoRequest {
+  string vendedor = 1;
+  string producto = 2;
+  float precioInicial = 3;
+}
+
+message OfertaRequest {
+  string comprador = 1;
+  string producto = 2;
+  float monto = 3;
+}
+
+message RespuestaBooleana {
+  bool exito = 1;
+}
+
+message ProductoInfo {
+  string vendedor = 1;
+  string producto = 2;
+  float precioActual = 3;
+}
+
+message CatalogoRespuesta {
+  repeated ProductoInfo productos = 1;
+}
+
+// Mensaje para la notificación de actualización (callback)
+message NotificacionUpdate {
+  string producto = 1;
+  float nuevoPrecio = 2;
+  string tipo = 3; // "NUEVO_PRODUCTO" o "NUEVA_OFERTA"
+}

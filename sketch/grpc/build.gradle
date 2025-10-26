@@ -1,0 +1,64 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.google.protobuf' version '0.8.18'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def grpcVersion = '1.49.0' // Puedes usar una versión más reciente
+def protobufVersion = '3.21.1' // Debe coincidir
+
+dependencies {
+    // Dependencias de gRPC
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
+    
+    // Soporte para anotaciones como @Generated
+    compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
+    
+    // Dependencias de la GUI (Swing)
+    // No son necesarias si ya están en el JDK
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                grpc {}
+            }
+        }
+    }
+}
+
+// Apuntar a las carpetas fuente
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+            srcDirs 'src/main/java'
+        }
+        proto {
+            srcDir 'src/main/proto'
+        }
+    }
+}
+
+application {
+    // Define las clases principales para ejecución
+    // mainClassName = 'tu.paquete.ServidorGPRC' 
+    // mainClassName = 'tu.paquete.ClienteGPRC'
+}
