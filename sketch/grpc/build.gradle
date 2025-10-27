@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.google.protobuf' version '0.8.18'
+    id 'com.google.protobuf' version '0.9.4'
 }
 
 repositories {
@@ -58,7 +58,33 @@ sourceSets {
 }
 
 application {
-    // Define las clases principales para ejecución
-    // mainClassName = 'tu.paquete.ServidorGPRC' 
-    // mainClassName = 'tu.paquete.ClienteGPRC'
+    // Define por defecto el servidor; usaremos tareas separadas para cliente/servidor
+    mainClass = 'grpcapp.ServidorGPRC'
+}
+
+// Tareas convenientes para ejecutar servidor y cliente
+tasks.register('runServer', JavaExec) {
+    group = 'application'
+    description = 'Ejecuta el servidor gRPC'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'grpcapp.ServidorGPRC'
+}
+
+tasks.register('runClient', JavaExec) {
+    group = 'application'
+    description = 'Ejecuta el cliente gRPC'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'grpcapp.ClienteGPRC'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// Evitar incluir .proto como recursos y manejar duplicados
+tasks.named('processResources') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    filesMatching('**/*.proto') { exclude() }
 }
