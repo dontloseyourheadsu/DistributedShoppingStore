@@ -14,7 +14,7 @@ public class SubastaControladorRMI implements ActionListener, ListSelectionListe
 
     SubastaVista vista;
     SubastaServidorRMI servidor; // Antes era SubastaModelo modelo
-    Hashtable listaConPrecios;
+    Hashtable<String, String> listaConPrecios;
 
     public SubastaControladorRMI(SubastaVista v, SubastaServidorRMI s) {
         vista = v;
@@ -62,14 +62,14 @@ public class SubastaControladorRMI implements ActionListener, ListSelectionListe
     public void actualizarCatalogo() {
         System.out.println("Actualizando catálogo desde el servidor...");
         try {
-            Vector lista = servidor.obtieneCatalogo(); // Llamada RMI
-            Enumeration it;
+            Vector<InformacionProducto> lista = servidor.obtieneCatalogo(); // Llamada RMI
+            Enumeration<InformacionProducto> it;
             InformacionProducto info;
-            listaConPrecios = new Hashtable();
+            listaConPrecios = new Hashtable<String, String>();
             vista.reinicializaListaProductos();
             it = lista.elements();
             while (it.hasMoreElements()) {
-                info = (InformacionProducto) it.nextElement();
+                info = it.nextElement();
                 listaConPrecios.put(info.producto, String.valueOf(info.precioActual));
                 vista.agregaProducto(info.producto);
             }
@@ -92,11 +92,10 @@ public class SubastaControladorRMI implements ActionListener, ListSelectionListe
 
     public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting() == false) {
-            JList lista = (JList) e.getSource();
-            String item = (String) lista.getSelectedValue();
+            String item = vista.getProductoSeleccionado();
             if (item != null) {
                 System.out.println(item);
-                String precio = (String) listaConPrecios.get(item);
+                String precio = listaConPrecios.get(item);
                 vista.desplegarPrecio(precio);
             }
         }

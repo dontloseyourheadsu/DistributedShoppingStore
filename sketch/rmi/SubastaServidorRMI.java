@@ -12,7 +12,7 @@ public interface SubastaServidorRMI extends Remote {
 
     boolean agregaOferta(String comprador, String producto, float monto) throws RemoteException;
 
-    Vector obtieneCatalogo() throws RemoteException;
+    Vector<InformacionProducto> obtieneCatalogo() throws RemoteException;
 
     // Métodos para el callback (la solución de sincronización)
     void registrarClienteCallback(ClienteCallbackRMI cliente) throws RemoteException;
