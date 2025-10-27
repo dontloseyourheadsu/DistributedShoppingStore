@@ -1,4 +1,4 @@
-package grpc.src.main.java;
+package grpcapp;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;

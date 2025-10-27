@@ -1,10 +1,9 @@
-package grpc.src.main.java;
+package grpcapp;
 
 import io.grpc.stub.StreamObserver;
 import io.grpc.subasta.*; // Importa las clases generadas por proto
 
 import java.util.Hashtable;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 // Clase interna para almacenar la info del producto (equivalente a InformacionProducto.java)
@@ -119,12 +118,6 @@ public class SubastaServicioImpl extends SubastaServicioGrpc.SubastaServicioImpl
 
         // Almacena el observador para poder enviarle mensajes después
         subscriptores.put(subscriberId, responseObserver);
-
-        // NOTA: Para manejar la desconexión, necesitaríamos un try-catch
-        // en 'notificarATodos' y eliminar al subscriptor si 'onError' o 'onCompleted'
-        // es llamado.
-        // gRPC maneja esto de forma más robusta, pero en una implementación simple,
-        // el 'responseObserver' quedará "abierto" hasta que el cliente cancele.
     }
 
     // --- Lógica de Notificación (La solución) ---
