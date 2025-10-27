@@ -8,18 +8,18 @@ import java.util.Enumeration;
 
 public class SubastaModeloRMI extends UnicastRemoteObject implements SubastaServidorRMI {
 
-    Hashtable usuarios;
-    Hashtable productos;
-    Hashtable ofertas;
+    Hashtable<String, String> usuarios;
+    Hashtable<String, InformacionProducto> productos;
+    Hashtable<String, InformacionOferta> ofertas;
 
     // Lista para los callbacks
     private Vector<ClienteCallbackRMI> clientesConectados;
 
     public SubastaModeloRMI() throws RemoteException {
         super(); // Llama al constructor de UnicastRemoteObject
-        usuarios = new Hashtable();
-        productos = new Hashtable();
-        ofertas = new Hashtable();
+        usuarios = new Hashtable<String, String>();
+        productos = new Hashtable<String, InformacionProducto>();
+        ofertas = new Hashtable<String, InformacionOferta>();
         clientesConectados = new Vector<ClienteCallbackRMI>();
     }
 
@@ -72,9 +72,9 @@ public class SubastaModeloRMI extends UnicastRemoteObject implements SubastaServ
         }
     }
 
-    public synchronized Vector obtieneCatalogo() throws RemoteException {
-        Vector resultado;
-        resultado = new Vector(productos.values());
+    public synchronized Vector<InformacionProducto> obtieneCatalogo() throws RemoteException {
+        Vector<InformacionProducto> resultado;
+        resultado = new Vector<InformacionProducto>(productos.values());
         return resultado;
     }
 
