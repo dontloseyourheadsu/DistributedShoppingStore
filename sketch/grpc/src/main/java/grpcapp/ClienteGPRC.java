@@ -1,10 +1,9 @@
-package grpc.src.main.java;
+package grpcapp;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.subasta.*; // Clases generadas
 import io.grpc.stub.StreamObserver;
-import java.util.Iterator;
 
 public class ClienteGPRC {
 
@@ -31,8 +30,7 @@ public class ClienteGPRC {
         vista.asignarActionListener(controlador);
         vista.asignarListSelectionListener(controlador);
 
-        // 4. Iniciar la suscripción a notificaciones (en un hilo separado)
-        //
+        // 4. Iniciar la suscripción a notificaciones (asíncrona)
         suscribirseAActualizaciones(asyncStub, controlador);
 
         System.out.println("Cliente gRPC conectado y escuchando actualizaciones...");
@@ -44,8 +42,7 @@ public class ClienteGPRC {
             SubastaServicioGrpc.SubastaServicioStub asyncStub,
             SubastaControladorGPRC controlador) {
 
-        // Creamos un observador para manejar las respuestas (notificaciones) del
-        // servidor
+        // Observador para manejar las respuestas (notificaciones) del servidor
         StreamObserver<NotificacionUpdate> responseObserver = new StreamObserver<NotificacionUpdate>() {
             @Override
             public void onNext(NotificacionUpdate notificacion) {
@@ -72,7 +69,7 @@ public class ClienteGPRC {
             }
         };
 
-        // Llamamos al método del servidor (asíncrono)
+        // Llamada al método del servidor (asíncrono)
         asyncStub.suscribirseNotificaciones(Empty.newBuilder().build(), responseObserver);
     }
 }

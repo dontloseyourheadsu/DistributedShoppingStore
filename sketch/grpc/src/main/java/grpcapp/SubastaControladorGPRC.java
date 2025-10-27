@@ -1,9 +1,8 @@
-package grpc.src.main.java;
+package grpcapp;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.Hashtable;
-import javax.swing.JList;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
@@ -102,11 +101,10 @@ public class SubastaControladorGPRC implements ActionListener, ListSelectionList
 
     public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting() == false) {
-            JList lista = (JList) e.getSource();
-            String item = (String) lista.getSelectedValue();
+            String item = vista.getProductoSeleccionado();
             if (item != null) {
                 System.out.println(item);
-                String precio = (String) listaConPrecios.get(item);
+                String precio = listaConPrecios.get(item);
                 vista.desplegarPrecio(precio);
             }
         }
