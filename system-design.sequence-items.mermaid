@@ -1,0 +1,21 @@
+%% DistributedShoppingStore – Sequence: Cached Item List with ETag
+sequenceDiagram
+    participant U as Client
+    participant API as REST API
+    participant C as Cache
+    participant S as Trading Service
+    participant D as Database
+
+    U->>API: GET /rooms/roomId/items with If-None-Match header
+    API->>C: GET room:roomId:items
+    alt Cache hit and ETag matches
+        C-->>API: items + etag
+        API-->>U: 304 Not Modified
+    else Cache miss or stale
+        API->>S: GetItems(roomId)
+        S->>D: SELECT items WHERE roomId
+        D-->>S: rows
+        S-->>API: items, version
+        API->>C: SET room:roomId:items with TTL
+        API-->>U: 200 OK items with ETag header
+    end
