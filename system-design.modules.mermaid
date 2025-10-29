@@ -1,0 +1,174 @@
+%% DistributedShoppingStore - Trading Service Module Architecture
+
+%% =========================
+%% Main Graph Definition
+%% =========================
+flowchart TB
+
+%% =========================
+%% Users & Roles Module
+%% =========================
+    subgraph UsersModule[Users & Roles Module]
+        direction TB
+        UR_API[gRPC API]
+        UR_SVC[Application Services]
+        UR_DOM[Domain Layer]
+        UR_REPO[Repository]
+        UR_DB[(Users Schema)]
+
+        UR_API --> UR_SVC
+        UR_SVC --> UR_DOM
+        UR_SVC --> UR_REPO
+        UR_REPO --> UR_DB
+
+        UR_DOM_DETAIL[Domain:<br/>User Aggregate<br/>UserRole Value Object<br/>Capacity Rules]
+        UR_SVC_DETAIL[Services:<br/>UserRegistration<br/>UserProfile<br/>RoleManagement]
+        UR_API_DETAIL[APIs:<br/>RegisterUser<br/>GetUserProfile<br/>UpdateRoles<br/>GetUserCapacity]
+    end
+
+    style UsersModule fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    style UR_DOM fill:#fff3cd,stroke:#ffc107
+    style UR_DB fill:#ffefc1,stroke:#b58900
+
+%% =========================
+%% Trading Rooms Module
+%% =========================
+    subgraph RoomsModule[Trading Rooms Module]
+        direction TB
+        RM_API[gRPC API]
+        RM_SVC[Application Services]
+        RM_DOM[Domain Layer]
+        RM_REPO[Repository]
+        RM_CACHE[(Redis Cache)]
+        RM_DB[(Rooms Schema)]
+
+        RM_API --> RM_SVC
+        RM_SVC --> RM_DOM
+        RM_SVC --> RM_REPO
+        RM_SVC --> RM_CACHE
+        RM_REPO --> RM_DB
+
+        RM_DOM_DETAIL[Domain:<br/>Room Aggregate<br/>RoomMembership Entity<br/>AccessPolicy VO<br/>RoomCategory VO]
+        RM_SVC_DETAIL[Services:<br/>RoomCreation<br/>MembershipService<br/>RoomSearch<br/>AccessService]
+        RM_API_DETAIL[APIs:<br/>CreateRoom<br/>JoinRoom<br/>LeaveRoom<br/>SearchRooms<br/>GetRoomDetails]
+        RM_CACHE_DETAIL[Cache:<br/>room:roomId:activeMembers<br/>rooms:search:hash]
+    end
+
+    style RoomsModule fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    style RM_DOM fill:#fff3cd,stroke:#ffc107
+    style RM_DB fill:#ffefc1,stroke:#b58900
+    style RM_CACHE fill:#ffebee,stroke:#c62828
+
+%% =========================
+%% Catalog/Items Module
+%% =========================
+    subgraph CatalogModule[Catalog/Items Module]
+        direction TB
+        CAT_API[gRPC API]
+        CAT_SVC[Application Services]
+        CAT_DOM[Domain Layer]
+        CAT_REPO[Repository]
+        CAT_CACHE[(Redis Cache)]
+        CAT_DB[(Catalog Schema)]
+
+        CAT_API --> CAT_SVC
+        CAT_SVC --> CAT_DOM
+        CAT_SVC --> CAT_REPO
+        CAT_SVC --> CAT_CACHE
+        CAT_REPO --> CAT_DB
+
+        CAT_DOM_DETAIL[Domain:<br/>Item Aggregate<br/>ItemStatus VO<br/>Money VO<br/>Price Update Logic]
+        CAT_SVC_DETAIL[Services:<br/>ItemCreation<br/>ItemQuery<br/>Versioning<br/>CacheInvalidation]
+        CAT_API_DETAIL[APIs:<br/>CreateItem<br/>GetRoomItems<br/>GetItemDetails<br/>WithdrawItem<br/>InvalidateCache]
+        CAT_CACHE_DETAIL[Cache:<br/>room:roomId:items<br/>ETag versioning]
+    end
+
+    style CatalogModule fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style CAT_DOM fill:#fff3cd,stroke:#ffc107
+    style CAT_DB fill:#ffefc1,stroke:#b58900
+    style CAT_CACHE fill:#ffebee,stroke:#c62828
+
+%% =========================
+%% Bidding Module
+%% =========================
+    subgraph BiddingModule[Bidding Module]
+        direction TB
+        BID_API[gRPC API]
+        BID_SVC[Application Services]
+        BID_DOM[Domain Layer]
+        BID_REPO[Repository]
+        BID_DB[(Bids Schema)]
+
+        BID_API --> BID_SVC
+        BID_SVC --> BID_DOM
+        BID_SVC --> BID_REPO
+        BID_REPO --> BID_DB
+
+        BID_DOM_DETAIL[Domain:<br/>Bid Aggregate<br/>BiddingRules Service<br/>Optimistic Concurrency<br/>BidStatus VO]
+        BID_SVC_DETAIL[Services:<br/>BidPlacement<br/>BidHistory<br/>Concurrency Handler]
+        BID_API_DETAIL[APIs:<br/>PlaceBid<br/>GetBidHistory<br/>GetCurrentPrice]
+        BID_CONCURRENCY[Optimistic Locking:<br/>Item RowVersion<br/>409 on Conflict]
+    end
+
+    style BiddingModule fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style BID_DOM fill:#fff3cd,stroke:#ffc107
+    style BID_DB fill:#ffefc1,stroke:#b58900
+
+%% =========================
+%% Links & Access Module
+%% =========================
+    subgraph LinksModule[Links & Access Module]
+        direction TB
+        LNK_API[gRPC API]
+        LNK_SVC[Application Services]
+        LNK_DOM[Domain Layer]
+        LNK_REPO[Repository]
+        LNK_CACHE[(Redis Cache)]
+        LNK_DB[(Links Schema)]
+
+        LNK_API --> LNK_SVC
+        LNK_SVC --> LNK_DOM
+        LNK_SVC --> LNK_REPO
+        LNK_SVC --> LNK_CACHE
+        LNK_REPO --> LNK_DB
+
+        LNK_DOM_DETAIL[Domain:<br/>RoomLink Aggregate<br/>AccessToken VO<br/>Slug Generator<br/>Popularity Tracking]
+        LNK_SVC_DETAIL[Services:<br/>LinkGeneration<br/>LinkResolution<br/>PopularityTracking<br/>AccessToken]
+        LNK_API_DETAIL[APIs:<br/>GenerateRoomLink<br/>ResolveLink<br/>GenerateAccessToken<br/>ValidateToken<br/>GetPopularLinks]
+        LNK_CACHE_DETAIL[Cache:<br/>roomlink:slug<br/>linktoken:token<br/>Popular promotion]
+    end
+
+    style LinksModule fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    style LNK_DOM fill:#fff3cd,stroke:#ffc107
+    style LNK_DB fill:#ffefc1,stroke:#b58900
+    style LNK_CACHE fill:#ffebee,stroke:#c62828
+
+%% =========================
+%% Search/Filters Module
+%% =========================
+    subgraph SearchModule[Search/Filters Module]
+        direction TB
+        SRCH_API[gRPC API]
+        SRCH_SVC[Application Services]
+        SRCH_DOM[Domain Layer]
+        SRCH_QUERY[Query Builder]
+        SRCH_CACHE[(Redis Cache)]
+        SRCH_DB[(PostgreSQL FTS)]
+
+        SRCH_API --> SRCH_SVC
+        SRCH_SVC --> SRCH_DOM
+        SRCH_SVC --> SRCH_QUERY
+        SRCH_SVC --> SRCH_CACHE
+        SRCH_QUERY --> SRCH_DB
+
+        SRCH_DOM_DETAIL[Domain:<br/>SearchCriteria VO<br/>SearchIndex Interface<br/>Filter Specs]
+        SRCH_SVC_DETAIL[Services:<br/>RoomSearch<br/>ItemSearch<br/>SellerDiscovery]
+        SRCH_API_DETAIL[APIs:<br/>SearchRooms<br/>SearchItems<br/>FindSellers]
+        SRCH_CACHE_DETAIL[Cache:<br/>search:hash<br/>3Complete 30 sec TTL]
+        SRCH_FTS[Full-Text Search:<br/>GIN indexes<br/>tsvector/tsquery]
+    end
+
+    style SearchModule fill:#e0f2f1,stroke:#00796b,stroke-width:2px
+    style SRCH_DOM fill:#fff3cd,stroke:#ffc107
+    style SRCH_DB fill:#ffefc1,stroke:#b58900
+    style SRCH_CACHE fill:#ffebee,stroke:#c62828

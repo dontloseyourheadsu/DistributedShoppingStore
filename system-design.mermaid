@@ -1,0 +1,75 @@
+%% DistributedShoppingStore – System Design (Mermaid)
+
+%% =========================
+%% Component/Flow Diagram
+%% =========================
+flowchart LR
+	subgraph Clients
+		BLAZOR["Blazor Web App"]
+		AVALONIA["Avalonia Desktop"]
+	end
+
+	GATE["API Gateway/Reverse Proxy (YARP)"]
+	REST["REST API (ASP.NET Core)"]
+	GRPC["gRPC Trading Service (ASP.NET Core)"]
+	AUTH["Auth Service (JWT Issuer)"]
+	CACHE[("Redis – Distributed Cache")]
+	DB[("Relational DB – e.g., PostgreSQL")]
+	OBS["Observability – OpenTelemetry"]
+	ORCH[".NET Aspire Orchestrator"]
+	QUEUE[("Background Jobs/Queue")]
+	SECRETS["Secrets/Config"]
+
+	subgraph Trading Service Modules
+		USERS["Users & Roles"]
+		ROOMS["Trading Rooms"]
+		CATALOG["Catalog/Items"]
+		BIDS["Bidding"]
+		LINKS["Links & Access"]
+		SEARCHM["Search/Filters"]
+
+		USERS --- ROOMS
+		ROOMS --- CATALOG
+		CATALOG --- BIDS
+		ROOMS --- LINKS
+		ROOMS --- SEARCHM
+	end
+
+	BLAZOR -->|HTTP/JSON| GATE --> REST
+	AVALONIA -->|HTTP/JSON| GATE --> REST
+
+	REST -->|gRPC internal| GRPC
+	REST --> AUTH
+	REST --> CACHE
+
+	GRPC --> DB
+	GRPC --> CACHE
+	AUTH --> DB
+
+	REST -. traces/logs .-> OBS
+	GRPC -. traces/logs .-> OBS
+	ORCH --- REST
+	ORCH --- GRPC
+	ORCH --- CACHE
+	ORCH --- DB
+	ORCH --- OBS
+
+	QUEUE --> GRPC
+	SECRETS --- REST
+	SECRETS --- GRPC
+
+	classDef svc fill:#0b6fa4,stroke:#0b6fa4,color:#fff;
+	classDef comp fill:#ffffff,stroke:#555,color:#111;
+	classDef store fill:#ffefc1,stroke:#b58900,color:#111;
+	class REST,GRPC,AUTH,ORCH,GATE svc
+	class CACHE,DB store
+	class USERS,ROOMS,CATALOG,BIDS,LINKS,SEARCHM comp
+
+%% Notes:
+%% - Clients only use REST; REST bridges to internal gRPC.
+%% - Items updates are pull-only (no server push) to maximize cache hits and ETag usage.
+%% - Premium/Verified sellers can host rooms up to 20 buyers; others limited to 5.
+%% See also (open separately):
+%% - system-design.sequence-items.mermaid
+%% - system-design.sequence-join-room.mermaid
+%% - system-design.domain.mermaid

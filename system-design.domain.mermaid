@@ -1,0 +1,49 @@
+%% DistributedShoppingStore – Domain Model (Class Diagram)
+classDiagram
+    class User {
+        +Guid id
+        +string username
+        +bool verified
+        +string[] roles
+    }
+    class Room {
+        +Guid id
+        +string name
+        +string category
+        +Guid sellerId
+        +bool isPrivate
+        +string passwordHash
+        +int capacity
+        +int activeMembers
+        +DateTime createdAt
+        +bool isArchived
+    }
+    class Item {
+        +Guid id
+        +Guid roomId
+        +string name
+        +string description
+        +decimal startPrice
+        +decimal currentPrice
+    }
+    class Bid {
+        +Guid id
+        +Guid itemId
+        +Guid buyerId
+        +decimal amount
+        +DateTime timestamp
+        +int version
+    }
+    class RoomLink {
+        +Guid id
+        +Guid roomId
+        +string slug
+        +bool isPopular
+        +DateTime lastAccessed
+        +int hits
+    }
+
+    User "1" --> "*" Room : sells
+    Room "1" --> "*" Item
+    Item "1" --> "*" Bid
+    Room "1" --> "*" RoomLink

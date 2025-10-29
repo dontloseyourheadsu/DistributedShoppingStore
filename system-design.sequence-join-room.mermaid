@@ -1,0 +1,24 @@
+%% DistributedShoppingStore – Sequence: Join Room with Capacity/Access
+sequenceDiagram
+    participant U as Client
+    participant API as REST API
+    participant S as Trading Service
+    participant C as Cache
+    participant D as Database
+
+    U->>API: POST /rooms/roomId/join with password
+    API->>S: ValidateAccess(user, roomId, password)
+    S->>D: Load room, seller, flags, capacity
+    S->>C: Get activeMembers count
+    alt Private room and invalid password
+        S-->>API: 403 Forbidden
+        API-->>U: Error
+    else Capacity exceeded
+        S-->>API: 409 Room Full
+        API-->>U: Error
+    else Allowed
+        S->>D: Add membership
+        S->>C: INCR activeMembers with TTL
+        S-->>API: 200 Joined
+        API-->>U: OK
+    end
