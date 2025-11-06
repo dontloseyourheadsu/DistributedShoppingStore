@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingStore.Web", "Trading
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingStore.Tests", "TradingStore.Tests\TradingStore.Tests.csproj", "{6CB4E2B8-033A-42DD-B924-BE52A1B22866}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingStore.GrpcService", "TradingStore.GrpcService\TradingStore.GrpcService.csproj", "{F2A55760-17E0-4659-B242-E3AC1405AFB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{6CB4E2B8-033A-42DD-B924-BE52A1B22866}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CB4E2B8-033A-42DD-B924-BE52A1B22866}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CB4E2B8-033A-42DD-B924-BE52A1B22866}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2A55760-17E0-4659-B242-E3AC1405AFB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2A55760-17E0-4659-B242-E3AC1405AFB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2A55760-17E0-4659-B242-E3AC1405AFB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2A55760-17E0-4659-B242-E3AC1405AFB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
