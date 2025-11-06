@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+option csharp_namespace = "TradingStore.GrpcService";
+
+package trading;
+
+service TradingService {
+  rpc CreateRoom (CreateRoomRequest) returns (CreateRoomReply);
+  rpc JoinRoom (JoinRoomRequest) returns (JoinRoomReply);
+  rpc CreateItem (CreateItemRequest) returns (CreateItemReply);
+  rpc GetRoomItems (GetRoomItemsRequest) returns (GetRoomItemsReply);
+  rpc PlaceBid (PlaceBidRequest) returns (PlaceBidReply);
+  rpc GetBidHistory (GetBidHistoryRequest) returns (GetBidHistoryReply);
+}
+
+message CreateRoomRequest {
+  string seller_id = 1;
+  string name = 2;
+  string category = 3;
+  bool is_private = 4;
+  string password = 5; // optional
+  int32 capacity = 6;  // 5 default or 20 for premium
+}
+message CreateRoomReply { string room_id = 1; }
+
+message JoinRoomRequest { string user_id = 1; string room_id = 2; string password = 3; }
+message JoinRoomReply { bool success = 1; string error = 2; }
+
+message CreateItemRequest {
+  string room_id = 1;
+  string seller_id = 2;
+  string name = 3;
+  string description = 4;
+  double start_price = 5;
+}
+message CreateItemReply { string item_id = 1; }
+
+message GetRoomItemsRequest { string room_id = 1; }
+message GetRoomItemsReply { repeated Item items = 1; }
+
+message PlaceBidRequest { string item_id = 1; string buyer_id = 2; double amount = 3; int32 version = 4; }
+message PlaceBidReply { bool accepted = 1; string error = 2; double current_price = 3; int32 current_version = 4; }
+
+message GetBidHistoryRequest { string item_id = 1; }
+message GetBidHistoryReply { repeated Bid bids = 1; }
+
+message Room {
+  string id = 1;
+  string name = 2;
+  string category = 3;
+  string seller_id = 4;
+  bool is_private = 5;
+  int32 capacity = 6;
+}
+
+message Item {
+  string id = 1;
+  string room_id = 2;
+  string name = 3;
+  string description = 4;
+  double start_price = 5;
+  double current_price = 6;
+  int32 version = 7;
+}
+
+message Bid {
+  string id = 1;
+  string item_id = 2;
+  string buyer_id = 3;
+  double amount = 4;
+  int64 timestamp = 5;
+  int32 version = 6;
+}
